@@ -17,6 +17,7 @@ slimbot.on('message', async (message) => {
   const chatId = message.chat.id
 
   if (!CHAT_IDS.includes(chatId)) {
+    console.error(`Chat ID ${chatId} not in list of valid chat IDs: ${CHAT_IDS.join(', ')}`)
     return
   }
 
