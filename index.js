@@ -11,7 +11,7 @@ const app = express()
 
 app.use(cors())
 
-const CHAT_IDS = process.env.CHAT_IDS.split(',')
+const CHAT_IDS = process.env.CHAT_IDS.split(',').map(Number)
 
 slimbot.on('message', async (message) => {
   const chatId = message.chat.id
@@ -24,6 +24,12 @@ slimbot.on('message', async (message) => {
   const text = message.text || message.caption
   const entities = message.entities || message.caption_entities
 
+  const hashtags = entities
+    .filter((entity) => entity.type === 'hashtag')
+    .map((entity) => text.slice(entity.offset, entity.offset + entity.length))
+  // [ { offset: 0, length: 4, type: 'hashtag' } ] }
+  console.log('hashtags:', hashtags)
+
   const messageId = message.message_id
   const userId = message.from.id
   const timestamp = message.date
@@ -35,39 +41,19 @@ slimbot.on('message', async (message) => {
       VALUES ($1, $2, $3, $4, $5, $6)`
     const values = [messageId, chatId, userId, timestamp, text, message]
     await db.query(sql, values)
+
+    // CREATE TABLE public.hashtags (
+    //   hashtag text,
+    //   message_id int REFERENCES public.messages(id) ON DELETE CASCADE
+    // );
+
     await db.query('COMMIT')
   } catch (err) {
     await db.query('ROLLBACK')
     throw err
   }
 
-  // CREATE TABLE public.messages (
-  //   id int NOT NULL,
-  //   chat_id bigint NOT NULL,
-  //   user_id int NOT NULL,
-  //   timestamp TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-  //   data jsonb,
-  //   CONSTRAINT messages_pk PRIMARY KEY (id)
-  // );
-
-  // -- TODO: create indexes!!!!
-
-  // CREATE TABLE public.hashtags (
-  //   hashtag text,
-  //   message_id int REFERENCES public.messages(id) ON DELETE CASCADE
-  // );
-
-
-
-
-  // caption: '#dit',
-  // caption_entities: [ { offset: 0, length: 4, type: 'hashtag' } ] }
-
-  // text: 'hallo #koek',
-  // entities: [ { offset: 6, length: 5, type: 'hashtag' } ] }
-
-
-  console.log('message')
+    console.log('message')
   console.log(message)
 })
 
