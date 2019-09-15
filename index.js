@@ -22,14 +22,6 @@ slimbot.on('message', async (message) => {
   }
 
   const text = message.text || message.caption
-  const entities = message.entities || message.caption_entities
-
-  const hashtags = entities
-    .filter((entity) => entity.type === 'hashtag')
-    .map((entity) => text.slice(entity.offset, entity.offset + entity.length))
-  // [ { offset: 0, length: 4, type: 'hashtag' } ] }
-  console.log('hashtags:', hashtags)
-
   const messageId = message.message_id
   const userId = message.from.id
   const timestamp = message.date
@@ -41,6 +33,16 @@ slimbot.on('message', async (message) => {
       VALUES ($1, $2, $3, $4, $5, $6)`
     const values = [messageId, chatId, userId, timestamp, text, message]
     await db.query(sql, values)
+
+    const entities = message.entities || message.caption_entities
+
+    if (entities && entities.length) {
+      const hashtags = entities
+        .filter((entity) => entity.type === 'hashtag')
+        .map((entity) => text.slice(entity.offset, entity.offset + entity.length))
+      // [ { offset: 0, length: 4, type: 'hashtag' } ] }
+      console.log('hashtags:', hashtags)
+    }
 
     // CREATE TABLE public.hashtags (
     //   hashtag text,
