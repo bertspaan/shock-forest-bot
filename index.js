@@ -29,10 +29,10 @@ slimbot.on('message', async (message) => {
   try {
     await db.query('BEGIN')
 
-    const sql = `INSERT INTO messages(id, chat_id, user_id, timestamp, text, data)
+    const messageQuery = `INSERT INTO messages(id, chat_id, user_id, timestamp, text, data)
       VALUES ($1, $2, $3, $4, $5, $6)`
-    const values = [messageId, chatId, userId, timestamp, text, message]
-    await db.query(sql, values)
+    const messageValues = [messageId, chatId, userId, timestamp, text, message]
+    await db.query(messageQuery, messageValues)
 
     const entities = message.entities || message.caption_entities
 
@@ -41,14 +41,13 @@ slimbot.on('message', async (message) => {
         .filter((entity) => entity.type === 'hashtag')
         .map((entity) => text.slice(entity.offset, entity.offset + entity.length))
 
-      // [ { offset: 0, length: 4, type: 'hashtag' } ] }
-      console.log('hashtags:', hashtags)
+      for (const hashtag of hashtags) {
+        const hashtagQuery = `INSERT INTO hashtags(hashtag, message_id)
+          VALUES ($1, $2)`
+        const hashtagValues = [hashtag, messageId]
+        await db.query(hashtagQuery, hashtagValues)
+      }
     }
-
-    // CREATE TABLE public.hashtags (
-    //   hashtag text,
-    //   message_id int REFERENCES public.messages(id) ON DELETE CASCADE
-    // );
 
     await db.query('COMMIT')
   } catch (err) {
@@ -56,7 +55,7 @@ slimbot.on('message', async (message) => {
     throw err
   }
 
-    console.log('message')
+  console.log('message')
   console.log(message)
 })
 
