@@ -24,7 +24,7 @@ slimbot.on('message', async (message) => {
   const text = message.text || message.caption
   const messageId = message.message_id
   const userId = message.from.id
-  const timestamp = message.date
+  const timestamp = new Date(message.date * 1000)
 
   try {
     await db.query('BEGIN')
@@ -40,6 +40,7 @@ slimbot.on('message', async (message) => {
       const hashtags = entities
         .filter((entity) => entity.type === 'hashtag')
         .map((entity) => text.slice(entity.offset, entity.offset + entity.length))
+
       // [ { offset: 0, length: 4, type: 'hashtag' } ] }
       console.log('hashtags:', hashtags)
     }
