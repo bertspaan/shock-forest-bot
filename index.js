@@ -25,13 +25,16 @@ slimbot.on('message', async (message) => {
   const messageId = message.message_id
   const userId = message.from.id
   const timestamp = new Date(message.date * 1000)
+  const edited = false
+  const replyTo = message.reply_to_message && message.reply_to_message.message_id
 
   try {
     await db.query('BEGIN')
 
-    const messageQuery = `INSERT INTO messages(id, chat_id, user_id, timestamp, text, data)
-      VALUES ($1, $2, $3, $4, $5, $6)`
-    const messageValues = [messageId, chatId, userId, timestamp, text, message]
+    const messageQuery = `INSERT INTO
+      messages(id, chat_id, timestamp, edited, reply_to, user_id, text, data)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
+    const messageValues = [messageId, chatId, timestamp, edited, replyTo, userId, text, message]
     await db.query(messageQuery, messageValues)
 
     const entities = message.entities || message.caption_entities
@@ -42,9 +45,10 @@ slimbot.on('message', async (message) => {
         .map((entity) => text.slice(entity.offset, entity.offset + entity.length))
 
       for (const hashtag of hashtags) {
-        const hashtagQuery = `INSERT INTO hashtags(hashtag, message_id)
-          VALUES ($1, $2)`
-        const hashtagValues = [hashtag, messageId]
+        const hashtagQuery = `INSERT INTO
+          hashtags(hashtag, message_id, chat_id, timestamp)
+          VALUES ($1, $2, $3, $4)`
+        const hashtagValues = [hashtag, messageId, chatId, timestamp]
         await db.query(hashtagQuery, hashtagValues)
       }
     }
