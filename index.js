@@ -41,17 +41,17 @@ app.get('/', async (req, res) => {
 })
 
 app.get('/messages', async (req, res) => {
-  const { rows } = await db.query('SELECT * FROM messages')
+  const { rows } = await db.runQuery('SELECT * FROM messages')
   res.send(rows)
 })
 
 app.get('/hashtags', async (req, res) => {
-  const { rows } = await db.query('SELECT * FROM hashtags')
+  const { rows } = await db.runQuery('SELECT * FROM hashtags')
   res.send(rows)
 })
 
 app.get('/files', async (req, res) => {
-  const { rows } = await db.query('SELECT * FROM files')
+  const { rows } = await db.runQuery('SELECT * FROM files')
   res.send(rows.map((row) => ({
     ...row,
     url: `https://shock-forest-group.s3.eu-central-1.amazonaws.com/${row.path}`
@@ -63,7 +63,7 @@ app.get('/locations', async (req, res) => {
   SELECT message_id, chat_id, timestamp, ST_AsGeoJSON(point) AS point
   FROM locations`
 
-  const { rows } = await db.query(query)
+  const { rows } = await db.runQery(query)
   res.send({
     type: 'FeatureCollection',
     features: rows.map((row) => ({
