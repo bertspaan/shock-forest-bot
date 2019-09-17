@@ -60,8 +60,18 @@ app.get('/files', async (req, res) => {
 
 app.get('/locations', async (req, res) => {
   const query = `
-  SELECT message_id, chat_id, timestamp, ST_AsGeoJSON(point) AS point
-  FROM locations`
+    SELECT
+      chat_id, message_id, timestamp,
+      CASE WHEN count = 1
+      THEN ST_AsGeoJSON(points[1])
+      ELSE ST_AsGeoJSON(ST_MakeLine(points))
+      END AS geometry
+    FROM (
+      SELECT
+        chat_id, message_id, MAX(timestamp) AS timestamp,
+        ARRAY_AGG(point) as points, COUNT(*) AS count FROM locations
+      GROUP BY chat_id, message_id
+    ) grouped`
 
   const { rows } = await db.runQuery(query)
   res.send({
