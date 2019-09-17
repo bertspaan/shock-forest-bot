@@ -33,6 +33,7 @@ CREATE TABLE public.files (
   file_name text,
   file_size int,
   mime_type text,
+  thumb BOOLEAN DEFAULT FALSE,
   path text,
   PRIMARY KEY (file_id),
   FOREIGN KEY (chat_id, message_id) references public.messages(chat_id, message_id) ON DELETE CASCADE
