@@ -52,7 +52,10 @@ app.get('/hashtags', async (req, res) => {
 
 app.get('/files', async (req, res) => {
   const { rows } = await db.query('SELECT * FROM files')
-  res.send(rows)
+  res.send(rows.map((row) => ({
+    ...row,
+    url: `https://shock-forest-group.s3.eu-central-1.amazonaws.com/${row.path}`
+  })))
 })
 
 app.get('/locations', async (req, res) => {
@@ -70,7 +73,7 @@ app.get('/locations', async (req, res) => {
         chatId: row.chat_id,
         timestamp: row.timestamp
       },
-      geometry: row.point
+      geometry: JSON.parse(row.point)
     }))
   })
 })
