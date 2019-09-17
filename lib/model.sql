@@ -31,7 +31,9 @@ CREATE TABLE public.files (
   message_id int NOT NULL,
   chat_id bigint NOT NULL,
   timestamp TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-  data jsonb,
+  file_name text,
+  file_size int,
+  mime_type text,
   path text,
   PRIMARY KEY (id),
   FOREIGN KEY (message_id, chat_id, timestamp) references public.messages(chat_id, id, timestamp) ON DELETE CASCADE
