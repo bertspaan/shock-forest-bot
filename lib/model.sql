@@ -20,8 +20,8 @@ CREATE TABLE public.hashtags (
   message_id int NOT NULL,
   chat_id bigint NOT NULL,
   timestamp TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-  FOREIGN KEY (message_id, chat_id, timestamp) references public.messages(chat_id, id, timestamp) ON DELETE CASCADE,
-  PRIMARY KEY (hashtag, chat_id, message_id)
+  PRIMARY KEY (hashtag, chat_id, message_id),
+  FOREIGN KEY (message_id, chat_id, timestamp) references public.messages(id, chat_id, timestamp) ON DELETE CASCADE
 );
 
 -- TODO: create indexes!!!!
@@ -36,7 +36,7 @@ CREATE TABLE public.files (
   mime_type text,
   path text,
   PRIMARY KEY (id),
-  FOREIGN KEY (message_id, chat_id, timestamp) references public.messages(chat_id, id, timestamp) ON DELETE CASCADE
+  FOREIGN KEY (message_id, chat_id, timestamp) references public.messages(id, chat_id, timestamp) ON DELETE CASCADE
 );
 
 -- TODO: create indexes!!!!
