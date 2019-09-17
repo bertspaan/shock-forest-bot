@@ -20,7 +20,7 @@ CREATE TABLE public.hashtags (
   chat_id bigint NOT NULL,
   message_id int NOT NULL,
   hashtag text,
-  PRIMARY KEY (hashtag, chat_id, message_id),
+  PRIMARY KEY (chat_id, message_id, hashtag),
   FOREIGN KEY (chat_id, message_id) REFERENCES public.messages(chat_id, message_id) ON DELETE CASCADE
 );
 

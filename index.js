@@ -37,8 +37,42 @@ slimbot.on('edited_message', async (message) => {
 })
 
 app.get('/', async (req, res) => {
+  res.send('Shock Forest Bot')
+})
+
+app.get('/messages', async (req, res) => {
   const { rows } = await db.query('SELECT * FROM messages')
   res.send(rows)
+})
+
+app.get('/hashtags', async (req, res) => {
+  const { rows } = await db.query('SELECT * FROM hashtags')
+  res.send(rows)
+})
+
+app.get('/files', async (req, res) => {
+  const { rows } = await db.query('SELECT * FROM files')
+  res.send(rows)
+})
+
+app.get('/locations', async (req, res) => {
+  const query = `
+  SELECT message_id, chat_id, timestamp, ST_AsGeoJSON(point) AS point
+  FROM locations`
+
+  const { rows } = await db.query(query)
+  res.send({
+    type: 'FeatureCollection',
+    features: rows.map((row) => ({
+      type: 'Feature',
+      properties: {
+        messageId: row.message_id,
+        chatId: row.chat_id,
+        timestamp: row.timestamp
+      },
+      geometry: row.point
+    }))
+  })
 })
 
 app.listen(process.env.PORT, () => {
