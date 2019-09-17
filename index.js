@@ -83,7 +83,7 @@ app.get('/locations', async (req, res) => {
         chatId: row.chat_id,
         timestamp: row.timestamp
       },
-      geometry: JSON.parse(row.point)
+      geometry: JSON.parse(row.geometry)
     }))
   })
 })
