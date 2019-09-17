@@ -1,42 +1,50 @@
 CREATE TABLE public.messages (
-	id int NOT NULL,
   chat_id bigint NOT NULL,
-  timestamp TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+	message_id int NOT NULL,
+  date_created TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+  date_edited TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
   edited BOOLEAN DEFAULT FALSE,
   reply_to int,
   user_id int NOT NULL,
   text text,
   data jsonb,
-  PRIMARY KEY (id, chat_id, timestamp)
+  PRIMARY KEY (chat_id, message_id)
 );
 
 -- TODO: create indexes!!!!
 --   - id
---   - timestamp
+--   - date_edited
 --   - reply_to
 
 CREATE TABLE public.hashtags (
-  hashtag text,
-  message_id int NOT NULL,
   chat_id bigint NOT NULL,
-  timestamp TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+  message_id int NOT NULL,
+  hashtag text,
   PRIMARY KEY (hashtag, chat_id, message_id),
-  FOREIGN KEY (message_id, chat_id, timestamp) references public.messages(id, chat_id, timestamp) ON DELETE CASCADE
+  FOREIGN KEY (chat_id, message_id) REFERENCES public.messages(chat_id, message_id) ON DELETE CASCADE
 );
 
 -- TODO: create indexes!!!!
 
 CREATE TABLE public.files (
-  id text NOT NULL,
-  message_id int NOT NULL,
+  file_id text NOT NULL,
   chat_id bigint NOT NULL,
-  timestamp TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+  message_id int NOT NULL,
   file_name text,
   file_size int,
   mime_type text,
   path text,
-  PRIMARY KEY (id),
-  FOREIGN KEY (message_id, chat_id, timestamp) references public.messages(id, chat_id, timestamp) ON DELETE CASCADE
+  PRIMARY KEY (file_id),
+  FOREIGN KEY (chat_id, message_id) references public.messages(chat_id, message_id) ON DELETE CASCADE
 );
 
 -- TODO: create indexes!!!!
+
+CREATE TABLE public.locations (
+  message_id int NOT NULL,
+  chat_id bigint NOT NULL,
+  timestamp TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+  point geometry,
+  PRIMARY KEY (chat_id, message_id, timestamp),
+  FOREIGN KEY (chat_id, message_id) references public.messages(chat_id, message_id) ON DELETE CASCADE
+)
