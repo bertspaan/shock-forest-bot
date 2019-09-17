@@ -63,7 +63,7 @@ app.get('/locations', async (req, res) => {
   SELECT message_id, chat_id, timestamp, ST_AsGeoJSON(point) AS point
   FROM locations`
 
-  const { rows } = await db.runQery(query)
+  const { rows } = await db.runQuery(query)
   res.send({
     type: 'FeatureCollection',
     features: rows.map((row) => ({
