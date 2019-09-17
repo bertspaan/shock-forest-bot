@@ -47,4 +47,4 @@ CREATE TABLE public.locations (
   point geometry,
   PRIMARY KEY (chat_id, message_id, timestamp),
   FOREIGN KEY (chat_id, message_id) references public.messages(chat_id, message_id) ON DELETE CASCADE
-)
+);
