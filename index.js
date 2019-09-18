@@ -5,6 +5,7 @@ const slimbot = new Slimbot(process.env.TELEGRAM_BOT_TOKEN)
 
 const messages = require('./lib/messages')
 const db = require('./lib/db')
+const util = require('./lib/util')
 
 const express = require('express')
 const cors = require('cors')
@@ -59,6 +60,25 @@ app.get('/messages', async (req, res) => {
 app.get('/hashtags', async (req, res) => {
   const { rows } = await db.runQuery('SELECT * FROM hashtags')
   res.send(rows)
+})
+
+app.get('/urls', async (req, res) => {
+  const query = `
+    SELECT * FROM (
+      SELECT
+        chat_id, message_id, text,
+        jsonb_array_elements(data->'entities') AS entity
+      FROM messages
+    )
+    AS entities
+    WHERE entity->>'type' = 'url'`
+
+  const { rows } = await db.runQuery(query)
+
+  res.send(rows.map((row) => ({
+    ...row,
+    url: util.entityFromText(row.text, row.entity)
+  })))
 })
 
 app.get('/files', async (req, res) => {
