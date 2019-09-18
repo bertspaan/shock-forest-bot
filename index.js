@@ -12,7 +12,10 @@ const app = express()
 
 app.use(cors())
 
-const CHAT_IDS = (process.env.CHAT_IDS || []).split(',').map(Number)
+const CHAT_IDS = (process.env.CHAT_IDS || '')
+  .split(',')
+  .filter((chatId) => chatId.length)
+  .map(Number)
 
 function checkChatId (chatId) {
   if (CHAT_IDS.length === 0) {
