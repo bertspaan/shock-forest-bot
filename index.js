@@ -54,7 +54,7 @@ app.get('/', async (req, res) => {
 
 app.get('/messages', async (req, res) => {
   const { rows } = await db.runQuery('SELECT * FROM messages')
-  res.send(rows)
+  res.send(rows.map((row) => row.data))
 })
 
 app.get('/hashtags', async (req, res) => {
