@@ -12,28 +12,36 @@ const app = express()
 
 app.use(cors())
 
-const CHAT_IDS = process.env.CHAT_IDS.split(',').map(Number)
+const CHAT_IDS = (process.env.CHAT_IDS || []).split(',').map(Number)
 
-slimbot.on('message', async (message) => {
-  const chatId = message.chat.id
+function checkChatId (chatId) {
+  if (CHAT_IDS.length === 0) {
+    return true
+  }
 
   if (!CHAT_IDS.includes(chatId)) {
     console.error(`Chat ID ${chatId} not in list of valid chat IDs: ${CHAT_IDS.join(', ')}`)
-    return
+    return false
   }
 
-  messages.store(message)
+  return true
+}
+
+function newMessage (message, edited = false) {
+  const chatId = message.chat.id
+  const valid = checkChatId(chatId)
+
+  if (valid) {
+    messages.store(message, edited)
+  }
+}
+
+slimbot.on('message', async (message) => {
+  newMessage(message, false)
 })
 
 slimbot.on('edited_message', async (message) => {
-  const chatId = message.chat.id
-
-  if (!CHAT_IDS.includes(chatId)) {
-    console.error(`Chat ID ${chatId} not in list of valid chat IDs: ${CHAT_IDS.join(', ')}`)
-    return
-  }
-
-  messages.store(message, true)
+  newMessage(message, true)
 })
 
 app.get('/', async (req, res) => {
