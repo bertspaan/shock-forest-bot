@@ -84,17 +84,20 @@ app.get('/urls', async (req, res) => {
     SELECT * FROM (
       SELECT
         chat_id, message_id, text,
-        jsonb_array_elements(data->'entities') AS entity
+        COALESCE(jsonb_array_elements(data->'entities'), jsonb_array_elements(data->'caption_entities'))
+          AS entity
       FROM messages
     )
     AS entities
-    WHERE entity->>'type' = 'url'`
+    WHERE
+      entity->>'type' = 'url' OR
+      entity->>'type' = 'text_link'`
 
   const { rows } = await db.runQuery(query)
 
   res.send(rows.map((row) => ({
     ...row,
-    url: util.entityFromText(row.text, row.entity)
+    url: row.entity.type === 'url' ? util.entityFromText(row.text, row.entity) : row.entity.url
   })))
 })
 
