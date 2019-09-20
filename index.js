@@ -9,9 +9,12 @@ const util = require('./lib/util')
 
 const express = require('express')
 const cors = require('cors')
+const compression = require('compression')
+
 const app = express()
 
 app.use(cors())
+app.use(compression())
 
 const CHAT_IDS = (process.env.CHAT_IDS || '')
   .split(',')
