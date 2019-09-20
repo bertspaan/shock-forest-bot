@@ -84,8 +84,7 @@ app.get('/urls', async (req, res) => {
     SELECT * FROM (
       SELECT
         chat_id, message_id, text,
-        COALESCE(jsonb_array_elements(data->'entities'), jsonb_array_elements(data->'caption_entities'))
-          AS entity
+        jsonb_array_elements(COALESCE(data->'entities', data->'caption_entities')) AS entity
       FROM messages
     )
     AS entities
