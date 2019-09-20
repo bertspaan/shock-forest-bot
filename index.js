@@ -58,7 +58,24 @@ app.get('/messages', async (req, res) => {
 })
 
 app.get('/hashtags', async (req, res) => {
-  const { rows } = await db.runQuery('SELECT * FROM hashtags')
+  const query = `
+  SELECT
+    hashtag, jsonb_agg(messages) AS messages
+  FROM (
+    SELECT hashtag,
+      jsonb_build_object(
+        'chat_id', h.chat_id,
+        'message_id', h.message_id,
+        'reply_to', data->'reply_to_message'->'message_id')
+      AS messages
+    FROM
+      hashtags h
+    JOIN messages m ON h.chat_id = m.chat_id AND h.message_id = m.message_id
+  ) AS a
+  GROUP BY
+    hashtag`
+
+  const { rows } = await db.runQuery(query)
   res.send(rows)
 })
 
