@@ -56,7 +56,17 @@ app.get('/', async (req, res) => {
 })
 
 app.get('/messages', async (req, res) => {
-  const { rows } = await db.runQuery('SELECT * FROM messages')
+  const query = `
+    WITH files AS (
+      SELECT m.chat_id, m.message_id, jsonb_agg(f.*) AS files
+      FROM messages m
+      JOIN files f ON m.chat_id = f.chat_id AND m.message_id = f.message_id
+      GROUP BY m.chat_id, m.message_id
+    )
+    SELECT m.data AS message, f.files FROM messages m
+    LEFT JOIN files f ON m.chat_id = f.chat_id AND m.message_id = f.message_id`
+
+  const { rows } = await db.runQuery(query)
   res.send(rows.map((row) => row.data))
 })
 
