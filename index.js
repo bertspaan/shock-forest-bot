@@ -64,7 +64,8 @@ app.get('/messages', async (req, res) => {
       GROUP BY m.chat_id, m.message_id
     )
     SELECT m.data AS message, f.files FROM messages m
-    LEFT JOIN files f ON m.chat_id = f.chat_id AND m.message_id = f.message_id`
+    LEFT JOIN files f ON m.chat_id = f.chat_id AND m.message_id = f.message_id
+    ORDER BY date_edited DESC`
 
   const { rows } = await db.runQuery(query)
   res.send(rows)
@@ -99,6 +100,7 @@ app.get('/urls', async (req, res) => {
         chat_id, message_id, text,
         jsonb_array_elements(COALESCE(data->'entities', data->'caption_entities')) AS entity
       FROM messages
+      ORDER BY date_edited DESC
     )
     AS entities
     WHERE
@@ -110,14 +112,6 @@ app.get('/urls', async (req, res) => {
   res.send(rows.map((row) => ({
     ...row,
     url: row.entity.type === 'url' ? util.entityFromText(row.text, row.entity) : row.entity.url
-  })))
-})
-
-app.get('/files', async (req, res) => {
-  const { rows } = await db.runQuery('SELECT * FROM files')
-  res.send(rows.map((row) => ({
-    ...row,
-    url: `https://shock-forest-group.s3.eu-central-1.amazonaws.com/${row.path}`
   })))
 })
 
