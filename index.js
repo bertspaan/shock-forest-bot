@@ -67,7 +67,7 @@ app.get('/messages', async (req, res) => {
     LEFT JOIN files f ON m.chat_id = f.chat_id AND m.message_id = f.message_id`
 
   const { rows } = await db.runQuery(query)
-  res.send(rows.map((row) => row.data))
+  res.send(rows)
 })
 
 app.get('/hashtags', async (req, res) => {
