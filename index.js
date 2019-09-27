@@ -155,6 +155,10 @@ app.get('/locations', async (req, res) => {
   })
 })
 
+app.ws('/ws', (ws, req) => {
+  console.log('New WebSocket connection!')
+})
+
 app.listen(process.env.PORT, () => {
   console.log(`Shock Forest Bot running on port ${process.env.PORT}`)
 })
