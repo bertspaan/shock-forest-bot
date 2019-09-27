@@ -8,10 +8,12 @@ const db = require('./lib/db')
 const util = require('./lib/util')
 
 const express = require('express')
+const expressWs = require('express-ws')
 const cors = require('cors')
 const compression = require('compression')
 
-const app = express()
+const ews = expressWs(express())
+const app = ews.app
 
 app.use(cors())
 app.use(compression())
@@ -40,6 +42,14 @@ function newMessage (message, edited = false) {
 
   if (valid) {
     messages.store(message, edited)
+
+    ews.getWss('/ws').clients.forEach((client) => {
+      if (client.readyState === 1) {
+        client.send({
+          timestamp: +new Date()
+        })
+      }
+    })
   }
 }
 
