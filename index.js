@@ -18,10 +18,7 @@ const app = ews.app
 app.use(cors())
 app.use(compression())
 
-const CHAT_IDS = (process.env.CHAT_IDS || '')
-  .split(',')
-  .filter((chatId) => chatId.length)
-  .map(Number)
+const CHAT_IDS = util.readEnvArray('CHAT_IDS').map(Number)
 
 function checkChatId (chatId) {
   if (CHAT_IDS.length === 0) {
