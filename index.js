@@ -36,6 +36,16 @@ function checkChatId (chatId) {
   return true
 }
 
+function sendWsUpdate () {
+  ews.getWss('/ws').clients.forEach((client) => {
+    if (client.readyState === 1) {
+      client.send(JSON.stringify({
+        timestamp: +new Date()
+      }))
+    }
+  })
+}
+
 function newMessage (message, edited = false) {
   const chatId = message.chat.id
   const valid = checkChatId(chatId)
@@ -43,13 +53,11 @@ function newMessage (message, edited = false) {
   if (valid) {
     messages.store(message, edited)
 
-    ews.getWss('/ws').clients.forEach((client) => {
-      if (client.readyState === 1) {
-        client.send({
-          timestamp: +new Date()
-        })
-      }
-    })
+    try {
+      sendWsUpdate()
+    } catch (err) {
+      console.error('Error sending WebSocket message', err.message)
+    }
   }
 }
 
