@@ -49,3 +49,21 @@ CREATE TABLE public.locations (
   PRIMARY KEY (chat_id, message_id, timestamp),
   FOREIGN KEY (chat_id, message_id) references public.messages(chat_id, message_id) ON DELETE CASCADE
 );
+
+CREATE OR REPLACE FUNCTION get_first_message(_message_id bigint) RETURNS bigint AS
+$BODY$
+DECLARE
+  reply_to bigint;
+BEGIN
+	SELECT m.reply_to INTO reply_to FROM messages m WHERE m.message_id = _message_id;
+	IF reply_to IS NOT NULL THEN
+		RETURN get_first_message(reply_to);
+	ELSE
+		RETURN _message_id;
+	END IF;
+END
+$BODY$
+LANGUAGE 'plpgsql';
+
+CREATE INDEX ON messages (message_id);
+
