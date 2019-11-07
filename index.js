@@ -141,6 +141,10 @@ app.get('/messages', async (req, res) => {
 
     const firstMessage = messagesById[firstMessageId]
 
+    if (!firstMessage) {
+      console.log('Fout!')
+    }
+
     row.messages
       .filter((message) => message.message && message.message.reply_to_message)
       .forEach((message) => {
@@ -156,6 +160,7 @@ app.get('/messages', async (req, res) => {
 
     return firstMessage
   })
+    .filter((message) => message)
 
   res.send(messages)
 })
