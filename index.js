@@ -126,8 +126,8 @@ app.get('/messages', async (req, res) => {
   const { rows } = await db.runQuery(query, [hashtags])
 
   const messages = rows.map((row) => {
+    const firstMessages = []
     const messagesById = {}
-    const firstMessageId = row.messages[0].first_message_id
 
     row.messages.forEach((message) => {
       const messageId = message.message.message_id
@@ -139,28 +139,20 @@ app.get('/messages', async (req, res) => {
       }
     })
 
-    const firstMessage = messagesById[firstMessageId]
-
-    if (!firstMessage) {
-      console.log('Fout!')
-    }
-
     row.messages
-      .filter((message) => message.message && message.message.reply_to_message)
       .forEach((message) => {
         const messageId = message.message.message_id
-        const replyTo = message.message.reply_to_message.message_id
+        const replyTo = message.message.reply_to_message && message.message.reply_to_message.message_id
 
-        if (messagesById[replyTo]) {
+        if (replyTo && messagesById[replyTo]) {
           messagesById[replyTo].replies.push(messagesById[messageId])
         } else {
-          console.error('Fout!')
+          firstMessages.push(messageId)
         }
       })
 
-    return firstMessage
-  })
-    .filter((message) => message)
+    return firstMessages.map((messageId) => messagesById[messageId])
+  }).flat()
 
   res.send(messages)
 })
