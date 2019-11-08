@@ -121,7 +121,9 @@ app.get('/messages', async (req, res) => {
         hashtags @> $1
     )
     SELECT jsonb_agg(r.*) AS messages FROM rows_with_hashtags r
-    GROUP BY first_message_id`
+    JOIN messages m ON m.message_id = first_message_id
+    GROUP BY first_message_id, date_edited
+    ORDER BY date_edited DESC`
 
   const { rows } = await db.runQuery(query, [hashtags])
 
