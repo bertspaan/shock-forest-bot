@@ -242,6 +242,10 @@ app.get('/locations', async (req, res) => {
   })
 })
 
+app.get('/hashtag-mapping', async (req, res) => {
+  res.send(format.hashtagMapping)
+})
+
 app.ws('/ws', (ws, req) => {
   console.log('New WebSocket connection!')
 })
