@@ -135,7 +135,7 @@ app.get('/messages', async (req, res) => {
       const messageId = message.message.message_id
       messagesById[messageId] = {
         message: message.message,
-        hashtags: message.hashtags.map(format.hashtag),
+        hashtags: new Set(message.hashtags.map(format.hashtag)),
         files: message.files,
         replies: []
       }
