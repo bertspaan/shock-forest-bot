@@ -135,7 +135,8 @@ app.get('/messages', async (req, res) => {
       const messageId = message.message.message_id
       messagesById[messageId] = {
         message: message.message,
-        hashtags: Array.from(new Set(message.hashtags.map(format.hashtag))),
+        hashtags: Array.from(new Set(message.hashtags.map(format.hashtag)))
+          .filter((hashtag) => hashtag),
         files: message.files,
         replies: []
       }
@@ -154,7 +155,10 @@ app.get('/messages', async (req, res) => {
       })
 
     return firstMessages.map((messageId) => messagesById[messageId])
-  }).flat()
+  })
+    .flat()
+    .filter((message) => message.hashtags.length)
+
 
   res.send(messages)
 })
