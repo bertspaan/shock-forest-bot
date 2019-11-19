@@ -159,7 +159,6 @@ app.get('/messages', async (req, res) => {
     .flat()
     .filter((message) => message.hashtags.length)
 
-
   res.send(messages)
 })
 
