@@ -192,6 +192,11 @@ app.get('/hashtags', async (req, res) => {
 
   rows.forEach((row) => {
     const hashtag = format.hashtag(row.hashtag)
+
+    if (!hashtag) {
+      return
+    }
+
     const messages = row.conversations
       .map((conversation) => conversation.message_ids.map((messageId) => ({
         message_id: messageId,
