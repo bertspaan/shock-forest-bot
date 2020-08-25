@@ -11,11 +11,6 @@ CREATE TABLE public.messages (
   PRIMARY KEY (chat_id, message_id)
 );
 
--- TODO: create indexes!!!!
---   - id
---   - date_edited
---   - reply_to
-
 CREATE TABLE public.hashtags (
   chat_id bigint NOT NULL,
   message_id int NOT NULL,
@@ -38,8 +33,6 @@ CREATE TABLE public.files (
   PRIMARY KEY (file_id),
   FOREIGN KEY (chat_id, message_id) references public.messages(chat_id, message_id) ON DELETE CASCADE
 );
-
--- TODO: create indexes!!!!
 
 CREATE TABLE public.locations (
   message_id int NOT NULL,
@@ -66,4 +59,3 @@ $BODY$
 LANGUAGE 'plpgsql';
 
 CREATE INDEX ON messages (message_id);
-

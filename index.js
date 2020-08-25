@@ -133,8 +133,15 @@ app.get('/messages', async (req, res) => {
 
     row.messages.forEach((message) => {
       const messageId = message.message.message_id
+
+      // TODO: map hashtags in text/caption/entities!
       messagesById[messageId] = {
-        message: message.message,
+        message: {
+          ...message.message,
+          reply_to_message: message.message.reply_to_message && {
+            message_id: message.message.reply_to_message.message_id
+          }
+        },
         hashtags: Array.from(new Set(message.hashtags.map(format.hashtag)))
           .filter((hashtag) => hashtag),
         files: message.files,
