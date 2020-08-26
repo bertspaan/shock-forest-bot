@@ -2,6 +2,8 @@
 
 Shock Forest Bot is a [Telegram bot](https://core.telegram.org/bots) that collects and archives chat messages from the [Shock Forest Group](https://hethem.nl/en/Chapter-Two/Door-Nicolas-Jaar-Shock-Forest-Group)’s Telegram chat group. These messages are stored in a PostgreSQL database, ordered by hashtag and exposed via an API.
 
+[![Shock Forest Log](https://raw.githubusercontent.com/bertspaan/shock-forest-log/master/screenshot.png)](https://shockforest.group/)
+
 This API is used by the [Shock Forest Log](https://shockforest.group/) display all messages, grouped by hashtag. The source code of the Shock Forest Log is also [available on GitHub](https://github.com/bertspaan/shock-forest-log).
 
 ## Usage
